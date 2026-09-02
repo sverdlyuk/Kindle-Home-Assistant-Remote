@@ -1,68 +1,70 @@
 # Kindle Home Assistant Remote
 
-Turn a 6th-gen Kindle Paperwhite into a low-power, touch-interactive
-Home Assistant control panel. No proxy server, no Docker, no persistent
-connection — just one static HTML file served directly from Home Assistant.
+Перетворення Kindle Paperwhite 6-го покоління на енергоощадну сенсорну панель
+керування Home Assistant. Без проксі-сервера, без Docker, без постійного
+з'єднання — лише один статичний HTML-файл, який роздає сам Home Assistant.
 
-## Prerequisites
+> Це форк [derekmcauley7/Kindle-Home-Assistant-Remote](https://github.com/derekmcauley7/Kindle-Home-Assistant-Remote).
+> Перелік змін — у розділі [Що додано у цьому форку](#що-додано-у-цьому-форку).
 
-- Kindle Paperwhite 2 (6th gen)
-- Home Assistant instance on the same local network
-- `kindle-dashboard.html` (the dashboard file)
+## Що потрібно
 
----
-
-## Part 1: Get the dashboard running
-
-### 1. Generate a Home Assistant long-lived access token
-
-1. In Home Assistant, click your profile (bottom left).
-2. Go to **Security** tab.
-3. Under **Long-Lived Access Tokens**, click **Create Token**.
-4. Name it (e.g. `kindle-dashboard`) and copy the token — you won't be able to see it again.
-
-### 2. Create the `www` folder (if it doesn't exist yet)
-
-Home Assistant does **not** create this folder automatically.
-
-1. Open the **File editor** (or **Studio Code Server**) add-on.
-2. At the root level — same level as `configuration.yaml` — create a new folder named exactly `www`.
-
-### 3. Add the dashboard file
-
-1. Inside `www`, create a new file named `kindle-dashboard.html`.
-2. Paste in the full contents of the dashboard file.
-3. Near the top of the `<script>` section, set:
-   - `HA_TOKEN` — paste the token from step 1.
-   - `HA_URL` — leave as `""` (empty string). This only needs to change if you host the file somewhere other than HA's own `www` folder.
-4. In the `GROUPS` object, edit the entity list to match your own lights/switches/covers (see **Customizing** below).
-5. Save the file.
-
-### 4. Test it on a computer or phone first
-
-Visit `http://YOUR-HA-IP:8123/local/kindle-dashboard.html` in a normal browser
-on the same network (e.g. `http://192.168.0.118:8123/local/kindle-dashboard.html`).
-
-- **404 error** → the `www` folder or filename is wrong, or Home Assistant needs a restart to pick up a brand-new `www` folder.
-- **Buttons show up but state stays "?"** → check the token was pasted correctly and entity IDs match yours exactly.
-- **Loads and toggles fine** → you're ready for the Kindle.
-
-### 5. Open it on the Kindle
-
-1. From the Kindle home screen, tap **Menu → Experimental Browser**.
-2. Type the same URL from step 4 (make sure it starts with `http://`).
-3. Tap a button to toggle a light/switch/blinds — the state updates a moment later.
-
-This is enough to have a working interactive dashboard. The Kindle sleeps
-normally when idle and wakes on tap, so battery drain is minimal — nothing
-holds a connection open in the background.
+- Kindle Paperwhite 2 (6-те покоління)
+- Home Assistant у тій самій локальній мережі
+- `kindle-dashboard.html` (файл дашборда)
 
 ---
 
-## Customizing the dashboard
+## Частина 1: Запуск дашборда
 
-Entities are grouped by section in the `GROUPS` object near the top of the
-`<script>` block:
+### 1. Створіть довготривалий токен доступу Home Assistant
+
+1. У Home Assistant натисніть на свій профіль (внизу ліворуч).
+2. Перейдіть на вкладку **Безпека** (Security).
+3. У розділі **Довготривалі токени доступу** (Long-Lived Access Tokens) натисніть **Створити токен**.
+4. Назвіть його (наприклад, `kindle-dashboard`) і скопіюйте — вдруге показати його не вийде.
+
+### 2. Створіть теку `www` (якщо її ще немає)
+
+Home Assistant **не** створює цю теку автоматично.
+
+1. Відкрийте доповнення **File editor** (або **Studio Code Server**).
+2. У кореневій теці — на тому ж рівні, що й `configuration.yaml` — створіть теку з назвою рівно `www`.
+
+### 3. Додайте файл дашборда
+
+1. Усередині `www` створіть файл із назвою `kindle-dashboard.html`.
+2. Вставте в нього повний вміст файлу дашборда.
+3. Угорі секції `<script>` задайте:
+   - `HA_TOKEN` — вставте токен із кроку 1.
+   - `HA_URL` — залиште `""` (порожній рядок). Змінювати потрібно лише тоді, коли файл розміщено не у власній теці `www` Home Assistant.
+4. В об'єкті `GROUPS` відредагуйте список сутностей під свої лампи/розетки/жалюзі (див. **Налаштування** нижче).
+5. Збережіть файл.
+
+### 4. Спершу перевірте на комп'ютері або телефоні
+
+Відкрийте `http://YOUR-HA-IP:8123/local/kindle-dashboard.html` у звичайному
+браузері в тій самій мережі (наприклад, `http://192.168.0.118:8123/local/kindle-dashboard.html`).
+
+- **Помилка 404** → неправильна тека `www` чи назва файлу, або Home Assistant потрібно перезапустити, щоб він побачив щойно створену теку `www`.
+- **Кнопки з'явилися, але стан лишається «?»** → перевірте, чи правильно вставлено токен і чи точно збігаються ID сутностей.
+- **Завантажується й перемикає** → можна переходити до Kindle.
+
+### 5. Відкрийте на Kindle
+
+1. На головному екрані Kindle натисніть **Menu → Experimental Browser**.
+2. Введіть ту саму адресу з кроку 4 (переконайтеся, що вона починається з `http://`).
+3. Натисніть кнопку, щоб перемкнути світло/розетку/жалюзі — стан оновиться за мить.
+
+Цього достатньо для робочого інтерактивного дашборда. Kindle засинає у простої
+та прокидається на дотик, тож витрата батареї мінімальна — у фоні нічого
+не тримає з'єднання відкритим.
+
+---
+
+## Налаштування дашборда
+
+Сутності згруповано за секціями в об'єкті `GROUPS` угорі блоку `<script>`:
 
 ```js
 var GROUPS = {
@@ -77,18 +79,26 @@ var GROUPS = {
 };
 ```
 
-- `id` must be the exact Home Assistant entity ID (find it in **Settings → Devices & Services → Entities**).
-- `name` is whatever label you want shown on the button.
-- Supported domains out of the box: `light`, `switch`, `cover` (blinds) — each gets its own icon and correct on/off (or open/closed) labeling automatically.
-- Adding a new section: add a new key to `GROUPS`, and a matching `<div id="group-yourkey"></div>` plus a `<div class="section-title">Your Title</div>` in the HTML body above the script.
-- Adding a new domain (e.g. `fan`, `lock`): add an entry to both `DOMAIN_META` and `ICONS` — ask if you'd like one added.
+- `id` має бути точним ID сутності Home Assistant (шукайте в **Налаштування → Пристрої та служби → Сутності**).
+- `name` — будь-який підпис, який ви хочете бачити на кнопці.
+- Домени, які підтримуються «з коробки»: `light`, `switch`, `cover` (жалюзі), а в цьому форку ще `climate` і `media_player` — кожен отримує власну іконку та коректні підписи станів автоматично.
+- Щоб додати нову секцію: додайте новий ключ у `GROUPS`, а в HTML над скриптом — відповідні `<div id="group-yourkey"></div>` та `<div class="section-title">Ваша назва</div>`.
+- Щоб додати новий домен (наприклад, `fan`, `lock`): додайте запис у `DOMAIN_META` та `ICONS`.
 
-## Troubleshooting quick reference
+## Що додано у цьому форку
 
-| Symptom | Likely cause |
+- **Українська локалізація** — заголовки, підписи навігації, статус оновлення та всі коментарі в коді перекладено українською.
+- **Підтримка домену `climate`** (кондиціонер) — власна іконка, підписи станів `COOL`, `HEAT`, `DRY`, `FAN`, `AUTO`, а також сервіси `turn_on`/`turn_off` замість універсального `toggle`.
+- **Підтримка домену `media_player`** (телевізор) — іконка `tv`, підписи станів `IDLE`, `PLAYING`, `PAUSED`, `BUFFERING` та сервіси `turn_on`/`turn_off`.
+- **Змінено логіку `updateButton()`** — для `climate` плитка вважається увімкненою за будь-якого стану, крім `off` (бо активний режим повертається як `cool`/`heat`/`auto`, а не `on`); для `media_player` — за будь-якого стану, крім `off`, `unavailable` і `unknown`.
+- **Власний набір сутностей** — Zigbee-світло (вітальня, кухня, коридор, ванна), кондиціонер і телевізор Samsung в одній секції.
+
+## Швидка діагностика
+
+| Симптом | Ймовірна причина |
 |---|---|
-| 404 on any device | File/folder path wrong, or `www` folder needs a HA restart |
-| 404 on Kindle only, works elsewhere | Kindle-specific network/typing issue, not the file |
-| Blank white page | Server/file issue if blank everywhere; old-browser JS issue if blank only on Kindle |
-| Buttons load but state is "?" | Bad/missing token, or entity ID typo |
-| Kindle browser shows chrome/URL bar | Use WebLaunch (Part 2) i
+| 404 на будь-якому пристрої | Неправильний шлях до файлу/теки, або теці `www` потрібен перезапуск HA |
+| 404 лише на Kindle, деінде працює | Проблема мережі або введення саме на Kindle, а не з файлом |
+| Порожня біла сторінка | Проблема сервера/файлу, якщо порожньо всюди; проблема JS у старому браузері, якщо порожньо лише на Kindle |
+| Кнопки завантажилися, але стан «?» | Хибний або відсутній токен, або помилка в ID сутності |
+| Браузер Kindle показує панель з адресою | Скористайтеся WebLaunch (Частина 2) |
