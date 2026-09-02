@@ -30,8 +30,8 @@
     font-size: 22px;
     margin: 22px 0 10px 0;
   }
-  /* Compact icon tiles - inline-block grid (no flexbox/grid, so it
-     works on very old WebKit). 3 tiles per row. */
+/* Компактні плитки з іконками — сітка на inline-block (без flexbox/grid,
+   тому працює навіть у дуже старих версіях WebKit). 3 плитки в ряд. */
   .tile {
     display: inline-block;
     width: 31%;
@@ -104,57 +104,57 @@
 </head>
 <body>
 <div id="wrap">
-  <h1>Home</h1>
+  <h1>Дім</h1>
   <div id="status">Loading&#8230;</div>
-  <a class="nav-link" href="remote.html">Remote &#8594;</a>
+  <a class="nav-link" href="remote.html">Пульт &#8594;</a>
   <div class="spacer"></div>
-  <div class="section-title">Living Room</div>
+  <div class="section-title"></div>
   <div id="group-living-room"></div>
-  <div class="section-title">Kitchen</div>
+  <div class="section-title"></div>
   <div id="group-kitchen"></div>
   <button class="refresh" onclick="refreshAll()">Refresh</button>
 </div>
 <script type="text/javascript">
   /* ============================================================
-     CONFIG - edit these three values for your setup
-     ============================================================ */
-  var HA_TOKEN = "Add Long-lived access token HERE";
-  // Leave HA_URL empty ("") if this file is hosted inside Home Assistant's
-  // own /config/www folder (served at http://YOUR-HA:8123/local/kindle-dashboard.html) -
-  // same-origin requests need no URL and no CORS setup.
-  // If you're hosting it elsewhere, set the full base URL instead, e.g.
-  // "http://192.168.0.118:8123"
+   НАЛАШТУВАННЯ — змініть ці три значення відповідно до вашої конфігурації
+   ============================================================ */
+  var HA_TOKEN = "Вставте сюди ваш токен Home Assistant";
+// Залиште HA_URL порожнім ("") якщо цей файл розміщено у власній папці
+// /config/www Home Assistant (доступний за адресою
+// http://YOUR-HA:8123/local/kindle-dashboard.html) — для запитів з того самого
+// джерела не потрібні ні URL, ні налаштування CORS.
+// Якщо файл розміщено в іншому місці, вкажіть повну базову URL-адресу, наприклад:
+// "http://192.168.0.118:8123"
   var HA_URL = "";
-  // Set to 0 to disable background polling entirely (max battery savings,
-  // manual Refresh button only). Otherwise, refresh interval in milliseconds
-  // while this page stays open (does nothing once the Kindle sleeps).
+// Встановіть 0, щоб повністю вимкнути фонове опитування
+// (максимальна економія батареї, оновлення лише вручну кнопкою Refresh).
+// В іншому випадку вкажіть інтервал оновлення в мілісекундах,
+// поки ця сторінка відкрита (після переходу Kindle у режим сну опитування припиняється).
   var AUTO_REFRESH_MS = 30000;
   /* ============================================================
      Entities - grouped by the section they appear under above
      ============================================================ */
   var GROUPS = {
     "group-living-room": [
-        { id: "light.left_wall_light", name: "Left Wall" },
-        { id: "light.living_room_main_light", name: "Main Light" },
-        { id: "light.right_wall_light", name: "Right Wall" },
-        { id: "light.cinema_mode", name: "Cinema Mode" },
-        { id: "cover.living_room_blinds", name: "Blinds" },
-        { id: "switch.christmas_lights", name: "TV", icon: "tv" }
-    ],
-    "group-kitchen": [
-      { id: "light.main_kitchen_lights", name: "Main Kitchen Lights" },
-      { id: "vacuum.vacuum", name: "Vacuum" }
+        { id: "light.lumi_lumi_switch_b2lc04_light", name: "Вітальня" },
+        { id: "light.tz3000_qewo8dlz_ts0013_light_3", name: "Кухня" },
+        { id: "light.unknown_light", name: "Коридор" },
+        { id: "light.tz3000_qewo8dlz_ts0013_light", name: "Ванна" },
+         { id: "climate.c66f55ff", name: "Кондиціонер", icon: "climate" },
+        { id: "media_player.samsung_q60ca_43", name: "TV" }
     ]
   };
-  /* ============================================================
-     Per-domain behavior: icon to show, which raw state counts as
-     "on" (for the tile's inverted look), what label to show for
-     each possible state, and - for domains that don't support a
-     generic toggle service (like vacuum) - explicit on/off services
-     to call instead. Add a domain here if you add entities of a
-     type not covered below (fan, lock, etc.) - otherwise unknown
-     domains fall back to "default".
-     ============================================================ */
+/* ============================================================
+   Поведінка для кожного домену: яку іконку показувати, який
+   вихідний стан вважається "увімкнено" (для інвертованого
+   вигляду плитки), який напис показувати для кожного можливого
+   стану та — для доменів, які не підтримують універсальний
+   сервіс перемикання (наприклад, vacuum) — які окремі сервіси
+   увімкнення/вимкнення викликати.
+   Додайте сюди домен, якщо додаєте сутності типу, яка не
+   описана нижче (fan, lock тощо). В іншому випадку невідомі
+   домени використовуватимуть "default".
+   ============================================================ */
   var DOMAIN_META = {
     light: {
       icon: "light",
@@ -178,18 +178,48 @@
       onService: "start",
       offService: "return_to_base"
     },
+    climate: {
+  icon: "climate",
+  onValue: "on",
+  labels: {
+    on: "ON",
+    off: "OFF",
+    cool: "COOL",
+    heat: "HEAT",
+    dry: "DRY",
+    fan_only: "FAN",
+    auto: "AUTO"
+  },
+  onService: "turn_on",
+  offService: "turn_off"
+},
+media_player: {
+  icon: "tv",
+  onValue: "on",
+  labels: {
+    off: "OFF",
+    idle: "IDLE",
+    playing: "PLAYING",
+    paused: "PAUSED",
+    buffering: "BUFFERING"
+  },
+  onService: "turn_on",
+  offService: "turn_off"
+},
     "default": {
       icon: "default",
       onValue: "on",
       labels: { on: "ON", off: "OFF" }
     }
   };
-  /* ============================================================
-     Icons - one per domain, drawn as plain-stroke SVG so they render
-     reliably on old e-ink browsers (no icon fonts/external assets).
-     Uses currentColor so they flip white-on-black automatically when
-     a tile is toggled to the "on" state, same as the text does.
-     ============================================================ */
+/* ============================================================
+   Іконки — по одній для кожного домену, намальовані у вигляді
+   простих контурних SVG, щоб вони надійно відображалися у старих
+   браузерах для e-ink (без шрифтів іконок та зовнішніх ресурсів).
+   Використовується currentColor, тому під час перемикання плитки
+   у стан "увімкнено" іконки автоматично змінюють колір на білий
+   на чорному тлі, так само як і текст.
+   ============================================================ */
   var ICONS = {
     light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
            '<path d="M9 18h6"/><path d="M10 22h4"/>' +
@@ -207,6 +237,13 @@
     vacuum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
             '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/>' +
             '</svg>',
+    climate: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="12" cy="12" r="9"/>' +
+        '<path d="M12 3v6"/>' +
+        '<path d="M12 15v6"/>' +
+        '<path d="M3 12h6"/>' +
+        '<path d="M15 12h6"/>' +
+        '</svg>',
     tv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
         '<rect x="2" y="4" width="20" height="13" rx="1"/>' +
         '<line x1="8" y1="21" x2="16" y2="21"/>' +
@@ -293,12 +330,27 @@
     if (!btn) return false;
     return (" " + btn.className + " ").indexOf(" on ") !== -1;
   }
-  function updateButton(entityId, state) {
-    var meta = metaFor(domainOf(entityId));
-    var label = (meta.labels && meta.labels[state]) ? meta.labels[state] : state;
-    var isOn = (state === meta.onValue);
-    setButtonState(entityId, label, isOn);
+function updateButton(entityId, state) {
+  var domain = domainOf(entityId);
+  var meta = metaFor(domain);
+  var label = (meta.labels && meta.labels[state]) ? meta.labels[state] : state;
+
+  var isOn;
+
+  if (domain === "climate") {
+    isOn = (state !== "off");
+  } else if (domain === "media_player") {
+    isOn = (
+      state !== "off" &&
+      state !== "unavailable" &&
+      state !== "unknown"
+    );
+  } else {
+    isOn = (state === meta.onValue);
   }
+
+  setButtonState(entityId, label, isOn);
+}
   function fetchState(entityId) {
     apiRequest("GET", "/api/states/" + entityId, null, function (ok, data) {
       if (ok && data) {
@@ -335,7 +387,7 @@
     }
     var now = new Date();
     document.getElementById("status").innerHTML =
-      "Updated " + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
+      "Оновлено " + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
   }
   function init() {
     for (var key in GROUPS) {
